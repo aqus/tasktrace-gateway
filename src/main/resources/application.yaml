@@ -1,0 +1,61 @@
+spring:
+  application:
+    name: tasktrace-gateway
+
+  cloud:
+    gateway:
+      default-filters:
+        - TokenRelay=
+      routes:
+        - id: tasks
+          uri: lb://TASKTRACE
+          predicates:
+            - Path=/tasks/**
+          filters:
+            - StripPrefix=1
+
+  security.oauth2:
+    resourceserver:
+      jwt:
+        jwk-set-uri: http://localhost:8180/realms/tasktrace/protocol/openid-connect/certs
+    client:
+      provider:
+        keycloak:
+          issuer-uri: http://localhost:8180/realms/tasktrace
+      registration:
+        tasktrace-gateway:
+          provider: keycloak
+          client-id: tasktrace-gateway
+          client-secret: Wsg1oUdrHZlx83U7SEFUfunnmF8414Z9
+          authorization-grant-type: authorization_code
+          scope: openid
+
+server:
+  port: 8080
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "metrics,health,logfile"
+  health:
+    defaults:
+      enabled: true
+
+logging:
+  file:
+    name: ./logs/tasktrace-gateway.log
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:8001/eureka
+    register-with-eureka: true
+    fetch-registry: true
+  instance:
+    leaseRenewalIntervalInSeconds: 30
+    leaseExpirationDurationInSeconds: 90
+    instance-id: ${spring.application.name}:${server.port}
+    prefer-ip-address: true
+  server:
+    eviction-interval-timer-in-ms: 15000
