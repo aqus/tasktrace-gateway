@@ -13,6 +13,12 @@ spring:
             - Path=/tasks/**
           filters:
             - StripPrefix=1
+        - id: users
+          uri: lb://TASKTRACE-USERS
+          predicates:
+            - Path=/users/**
+          filters:
+            - StripPrefix=1
 
   security.oauth2:
     resourceserver:
