@@ -19,6 +19,12 @@ spring:
             - Path=/users/**
           filters:
             - StripPrefix=1
+        - id: storage
+          uri: lb://TASKTRACE-STORAGE
+          predicates:
+            - Path=/storage/**
+          filters:
+            - StripPrefix=1
 
   security.oauth2:
     resourceserver:
